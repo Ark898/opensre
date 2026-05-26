@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -84,11 +85,50 @@ def load_stdin() -> dict[str, Any]:
 
 def load_interactive() -> dict[str, Any]:
     """Prompt the user to paste an alert payload."""
-    print("Paste the alert JSON payload, then press Ctrl-D when finished.", file=sys.stderr)
+    eof_hint = "Ctrl-Z then Enter" if os.name == "nt" else "Ctrl-D"
+
+    print(f"Paste the alert JSON payload, then press {eof_hint} when finished.", file=sys.stderr)
     raw_text = sys.stdin.read()
     if not raw_text.strip():
         raise SystemExit("No alert JSON was provided in interactive mode.")
     return parse_payload_text(raw_text, "interactive input")
+
+def load_guided_menu() -> dict[str, Any]:
+    """Interactive guided investigation menu."""
+
+    print("\nNo alert input detected.\n")
+
+    print("Choose an option:")
+    print("1. Use bundled demo alert")
+    print("2. Paste JSON interactively")
+    print("3. Load alert from file")
+    print("4. Exit")
+
+    choice = input("\nEnter choice (1-4): ").strip()
+
+    if choice == "1":
+        demo = bundled_demo_alert_path()
+
+        if demo is None:
+            raise SystemExit("Bundled demo alert not found.")
+
+        return load_file(str(demo))
+
+    if choice == "2":
+        return load_interactive()
+
+    if choice == "3":
+        path = input("Enter alert file path: ").strip()
+
+        if not path:
+            raise SystemExit("No file path provided.")
+
+        return load_file(path)
+
+    if choice == "4":
+        raise SystemExit(0)
+
+    raise SystemExit("Invalid selection.")
 
 
 def load_payload(
@@ -106,8 +146,5 @@ def load_payload(
     if input_path:
         return load_file(input_path)
     if sys.stdin.isatty():
-        raise SystemExit(
-            "No alert input provided. Use --input/-i <file>, --input-json <json>, "
-            "--interactive to paste JSON, or pipe alert JSON on stdin."
-        )
+        return load_guided_menu()
     return load_stdin()

@@ -417,3 +417,24 @@ def test_confirm_run_prints_openclaw_preflight_messages(monkeypatch, capsys) -> 
     output = capsys.readouterr().out
     assert "OpenClaw preflight: unavailable." in output
     assert "Fix: verify openclaw." in output
+    
+    
+def test_load_payload_uses_guided_menu(monkeypatch) -> None:
+    from app.cli.investigation.payload import load_payload
+    import app.cli.investigation.payload as alert_loader
+
+    monkeypatch.setattr(
+        alert_loader.sys.stdin,
+        "isatty",
+        lambda: True,
+    )
+
+    monkeypatch.setattr(
+        alert_loader,
+        "load_guided_menu",
+        lambda: {"demo": True},
+    )
+
+    result = load_payload(None, None, False)
+
+    assert result == {"demo": True}    
