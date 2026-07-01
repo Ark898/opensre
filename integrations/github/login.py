@@ -11,16 +11,16 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from integrations.github.mcp_oauth import (
+    GitHubDeviceCode,
+    authorize_github_via_device_flow,
+)
 from integrations.github_mcp import (
     DEFAULT_GITHUB_MCP_MODE,
     DEFAULT_GITHUB_MCP_TOOLSETS,
     DEFAULT_GITHUB_MCP_URL,
     build_github_mcp_config,
     validate_github_mcp_config,
-)
-from integrations.github_mcp_oauth import (
-    GitHubDeviceCode,
-    authorize_github_via_device_flow,
 )
 from integrations.store import upsert_integration
 
