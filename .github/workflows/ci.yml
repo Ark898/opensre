@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "surfaces/**"
+      - "surfaces/interactive_shell/**"
       - "config/**"
       - "core/**"
       - "platform/deployment/**"
@@ -26,6 +27,7 @@ on:
     branches: [main]
     paths:
       - "surfaces/**"
+      - "surfaces/interactive_shell/**"
       - "config/**"
       - "core/**"
       - "platform/deployment/**"
